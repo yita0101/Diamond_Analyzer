@@ -123,18 +123,28 @@ def analyse_diamonds():
         }), 500
 
 def run_development():
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    port = int(os.getenv('FLASK_PORT', 5000))
+    fullnode_url = Config.get_fullnode_url()
+    print(f"Development server running at http://{host}:{port}")
+    print(f"Fullnode URL: {fullnode_url}")
     app.run(
-        host=os.getenv('FLASK_HOST', '127.0.0.1'),
-        port=int(os.getenv('FLASK_PORT', 5000)),
+        host=host,
+        port=port,
         debug=True
     )
 
 def run_production():
     from waitress import serve
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_PORT', 5000))
+    fullnode_url = Config.get_fullnode_url()
+    print(f"Production server running at http://{host}:{port}")
+    print(f"Fullnode URL: {fullnode_url}")
     serve(
         app,
-        host=os.getenv('FLASK_HOST', '0.0.0.0'),
-        port=int(os.getenv('FLASK_PORT', 5000))
+        host=host,
+        port=port
     )
 
 if __name__ == '__main__':
