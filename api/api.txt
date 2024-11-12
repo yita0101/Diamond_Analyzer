@@ -1,0 +1,119 @@
+HACD Diamond Analysis API Documentation
+
+1. Base URL
+http://localhost:5000
+
+2. Response Status Codes
+- 20000: Success
+- 40001: Missing Required Parameters
+- 40002: Invalid Diamond Name Format
+- 50000: Server Internal Error
+
+3. Endpoints
+
+3.1 Analyze Diamonds by Address
+Endpoint: /analyse_address
+Method: GET
+Parameters: 
+  - address: Required. The wallet address to analyze
+
+Example Request:
+GET http://localhost:5000/analyse_address?address=0x1234567890abcdef
+
+Example Response:
+{
+    "success": true,
+    "message": "Analysis completed",
+    "code": 20000,
+    "data": {
+        "address": "0x1234567890abcdef",
+        "total_diamonds": 3,
+        "total_score": 250,
+        "statistics": {
+            "with_inscription": {
+                "count": 2,
+                "score_sum": 175,
+                "diamonds": [
+                    {"name": "ABCDEF", "score": 85},
+                    {"name": "GHIJKL", "score": 90}
+                ]
+            },
+            "without_inscription": {
+                "count": 1,
+                "score_sum": 75,
+                "diamonds": [
+                    {"name": "MNOPQR", "score": 75}
+                ]
+            }
+        }
+    }
+}
+
+3.2 Analyze Multiple Diamonds by Names
+Endpoint: /analyse_diamonds
+Method: GET
+Parameters:
+  - names: Required. Comma-separated diamond names (6 characters each)
+
+Example Request:
+GET http://localhost:5000/analyse_diamonds?names=ABCDEF,GHIJKL,MNOPQR
+
+Example Response:
+{
+    "success": true,
+    "message": "Analysis completed",
+    "code": 20000,
+    "data": {
+        "total_diamonds": 3,
+        "total_score": 250,
+        "statistics": {
+            "with_inscription": {
+                "count": 2,
+                "score_sum": 175,
+                "diamonds": [
+                    {"name": "ABCDEF", "score": 85},
+                    {"name": "GHIJKL", "score": 90}
+                ]
+            },
+            "without_inscription": {
+                "count": 1,
+                "score_sum": 75,
+                "diamonds": [
+                    {"name": "MNOPQR", "score": 75}
+                ]
+            }
+        }
+    }
+}
+
+4. Error Response Examples
+
+4.1 Missing Address Parameter
+{
+    "success": false,
+    "message": "Please provide a valid address",
+    "code": 40001,
+    "data": null
+}
+
+4.2 Invalid Diamond Name
+{
+    "success": false,
+    "message": "Invalid diamond names: ABC",
+    "code": 40002,
+    "data": null
+}
+
+4.3 Server Error
+{
+    "success": false,
+    "message": "Error occurred during analysis: <error_message>",
+    "code": 50000,
+    "data": null
+}
+
+5. Notes
+- All diamond scores less than 1 will be set to 1
+- Diamond names must be exactly 6 characters long
+- The API returns both total statistics and detailed diamond information
+- Diamonds are categorized into two groups: with_inscription and without_inscription 
