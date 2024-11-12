@@ -1,7 +1,7 @@
 import requests
 import csv
 from datetime import datetime
-from lib.diamondAnalyser import DiamondAnalyser
+from lib.DiamondAnalyser import DiamondAnalyser
 
 class DiamondManager:
     def __init__(self, fullnode_url="http://127.0.0.1:8081"):
@@ -59,7 +59,7 @@ class DiamondManager:
             score, has_hacds = self.analyse_diamond(diamond_name)
             result = {
                 "name": diamond_name,
-                "score": score,
+                "score": max(1,score),
                 "has_hacds": has_hacds
             }
             results.append(result)

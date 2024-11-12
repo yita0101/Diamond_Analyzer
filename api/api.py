@@ -18,10 +18,7 @@ def analyse_address():
     
     try:
         results = diamond_manager.analyse_address_diamonds(address)
-        
-        for r in results:
-            r['score'] = max(1, r['score'])
-        
+
         diamonds_with_inscription = [r for r in results if r['has_hacds']]
         diamonds_without_inscription = [r for r in results if not r['has_hacds']]
         total_score = sum(r['score'] for r in results)

@@ -19,7 +19,7 @@ def build_api():
         '--clean',  # 清理临时文件
         '--noconsole',  # 不显示控制台
         f'--add-data={str(root_dir / "DiamondManager.py")}:.',  # 添加依赖文件
-        f'--add-data={str(root_dir / "lib/diamondAnalyser.py")}:lib',  # 添加lib目录下的依赖
+        f'--add-data={str(root_dir / "lib/DiamondAnalyser.py")}:lib',  # 添加lib目录下的依赖
         '--hidden-import=flask',
         '--hidden-import=requests',
         '--hidden-import=gunicorn',
