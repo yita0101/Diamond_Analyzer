@@ -3,3 +3,5 @@
 **/*.spec
 **/build
 **/dist
+**/*.zip
+**/*.7z

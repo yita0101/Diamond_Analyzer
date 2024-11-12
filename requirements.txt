@@ -1,0 +1,7 @@
+PyInstaller
+tkinter
+pyperclip
+requests
+flask
+python-dotenv
+waitress  # Production WSGI server

@@ -1,62 +1,86 @@
 import PyInstaller.__main__
 import os
+import sys
 import shutil
-from pathlib import Path
 
-def build_api():
-    # 获取项目根目录的绝对路径
-    root_dir = Path(__file__).parent.parent.absolute()
-    
-    # 创建输出目录
-    if not os.path.exists('dist'):
-        os.makedirs('dist')
-    
-    # PyInstaller打包参数
-    params = [
-        str(root_dir / 'api.py'),  # 主程序文件
-        '--name=hacd_api',  # 输出文件名
-        '--onefile',  # 打包成单个文件
-        '--clean',  # 清理临时文件
-        '--noconsole',  # 不显示控制台
-        f'--add-data={str(root_dir / "DiamondManager.py")}:.',  # 添加依赖文件
-        f'--add-data={str(root_dir / "lib/DiamondAnalyser.py")}:lib',  # 添加lib目录下的依赖
-        '--hidden-import=flask',
-        '--hidden-import=requests',
-        '--hidden-import=gunicorn',
-        '--distpath=./dist',  # 输出目录
-        '--workpath=./build',  # 工作目录
-        '--specpath=./build',  # spec文件目录
-    ]
-    
-    # 执行打包
-    PyInstaller.__main__.run(params)
-    
-    # 复制配置文件和说明文档
-    shutil.copy(str(root_dir / 'api.txt'), './dist/')
-    
-    # 创建启动脚本
-    create_start_script()
-    
-    print("Build completed! Output files are in the dist directory.")
+# Ensure we're in the correct directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(script_dir))
+os.chdir(script_dir)
 
-def create_start_script():
-    script_content = """#!/bin/bash
-    
-# 检查gunicorn是否已安装
-if ! command -v gunicorn &> /dev/null; then
-    echo "Installing gunicorn..."
-    pip install gunicorn
-fi
+# Add project root to Python path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
-# 启动API服务
-gunicorn -w 4 -b 0.0.0.0:5000 api:app
-"""
-    
-    with open('dist/start.sh', 'w') as f:
-        f.write(script_content)
-    
-    # 添加执行权限
-    os.chmod('dist/start.sh', 0o755)
+# Define path separator based on OS
+separator = ';' if os.name == 'nt' else ':'
 
-if __name__ == '__main__':
-    build_api() 
+# Define build parameters
+build_args = [
+    '../api.py',  # Main program entry
+    '--name=DiamondAnalyzerAPI',  # Output exe name
+    '--clean',  # Clean temporary files
+    '--noconfirm',  # Don't ask for confirmation
+    # Include icon
+    f'--icon={os.path.join(project_root, "icons/icons.ico")}',  # Program icon
+    # Include lib directory and its contents
+    f'--add-data={os.path.join(project_root, "lib/*")}{separator}lib/',
+    f'--add-data={os.path.join(project_root, "lib/__init__.py")}{separator}lib/',
+    # Include configuration files
+    f'--add-data=../.env{separator}.',
+    f'--add-data=../api.txt{separator}.',
+    # Hidden imports
+    '--hidden-import=waitress',
+    '--hidden-import=flask',
+    '--hidden-import=lib.DiamondManager',
+    '--hidden-import=lib.DiamondAnalyser',
+    # Path settings
+    '--paths=.',
+    f'--paths={project_root}',
+    # Build settings
+    '--onefile',  # Generate single exe file
+]
+
+# Platform specific settings
+if os.name == 'nt':  # Windows
+    build_args.extend([
+        '--console',  # Show console window
+    ])
+else:  # Linux/Mac
+    build_args.extend([
+        '--console',
+    ])
+
+# Run PyInstaller
+try:
+    PyInstaller.__main__.run(build_args)
+    
+    # Post-build steps
+    dist_dir = os.path.join(script_dir, 'dist')
+    if not os.path.exists(dist_dir):
+        os.makedirs(dist_dir)
+    
+    # Copy configuration files to dist
+    files_to_copy = {
+        '.env': os.path.join(os.path.dirname(script_dir), '.env'),
+        'api.txt': os.path.join(os.path.dirname(script_dir), 'api.txt')
+    }
+    
+    for dest_name, source_path in files_to_copy.items():
+        if os.path.exists(source_path):
+            try:
+                shutil.copy2(source_path, os.path.join(dist_dir, dest_name))
+                print(f"Copied {dest_name} to dist directory")
+            except Exception as e:
+                print(f"Warning: Failed to copy {dest_name}: {str(e)}")
+    
+    print("\nBuild completed successfully!")
+    print(f"Executable can be found in: {dist_dir}")
+    print("\nImportant files copied to dist directory:")
+    print("- .env (current configuration)")
+    print("- api.txt (API documentation)")
+    print("\nMake sure to review and update the .env file in the dist directory if needed.")
+    
+except Exception as e:
+    print(f"Error occurred during build: {str(e)}")
+    sys.exit(1)

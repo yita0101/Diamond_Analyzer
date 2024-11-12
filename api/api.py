@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from lib.DiamondManager import DiamondManager
+from config import Config
+import os
 
 app = Flask(__name__)
-diamond_manager = DiamondManager()
+diamond_manager = DiamondManager(Config.get_fullnode_url())
 
 @app.route('/analyse_address', methods=['GET'])
 def analyse_address():
@@ -120,5 +122,23 @@ def analyse_diamonds():
             'data': None
         }), 500
 
+def run_development():
+    app.run(
+        host=os.getenv('FLASK_HOST', '127.0.0.1'),
+        port=int(os.getenv('FLASK_PORT', 5000)),
+        debug=True
+    )
+
+def run_production():
+    from waitress import serve
+    serve(
+        app,
+        host=os.getenv('FLASK_HOST', '0.0.0.0'),
+        port=int(os.getenv('FLASK_PORT', 5000))
+    )
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    if Config.is_development():
+        run_development()
+    else:
+        run_production()

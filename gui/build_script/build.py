@@ -23,7 +23,12 @@ build_args = [
     '--hidden-import=pandas',  # Ensure pandas is included
     '--hidden-import=numpy',
     '--hidden-import=matplotlib',
+    '--hidden-import=lib.DiamondManager',  # Explicitly include lib module
+    '--hidden-import=lib.DiamondAnalyser',
     '--onefile',  # Generate single exe file
+    # Add paths for Linux
+    '--paths=.',
+    f'--paths={project_root}',
 ]
 
 # Run PyInstaller

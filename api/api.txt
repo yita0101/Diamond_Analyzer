@@ -18,7 +18,7 @@ Parameters:
   - address: Required. The wallet address to analyze
 
 Example Request:
-GET http://localhost:5000/analyse_address?address=0x1234567890abcdef
+GET http://localhost:5000/analyse_address?address=1LDxX4CEu1JUntcgBRBu5PauEUD8cdQRS
 
 Example Response:
 {
@@ -56,7 +56,7 @@ Parameters:
   - names: Required. Comma-separated diamond names (6 characters each)
 
 Example Request:
-GET http://localhost:5000/analyse_diamonds?names=ABCDEF,GHIJKL,MNOPQR
+GET http://localhost:5000/analyse_diamonds?names=YIYBAB,HNXHNX
 
 Example Response:
 {
