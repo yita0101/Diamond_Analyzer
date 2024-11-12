@@ -13,13 +13,13 @@ Before building the project, ensure you have:
 
 ## Project Structure
 
-diamond-analyzer/
-├── api/                  # API server
+diamond-analyzer
+├── api                  # API server
 │   ├── api.py           # Main API file
 │   ├── api.txt          # API documentation
 │   ├── config.py        # API configuration
 │   ├── .env             # Environment variables
-│   └── build_script/    # API build scripts
+│   └── build_script   # API build scripts
 ├── gui/                 # GUI application
 │   ├── gui.py          # Main GUI file
 │   ├── config.py       # GUI configuration
