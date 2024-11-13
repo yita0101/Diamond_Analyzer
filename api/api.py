@@ -1,8 +1,26 @@
 from flask import Flask, jsonify, request
-from lib.DiamondManager import DiamondManager
+
 from config import Config
 import os
+import sys
 
+# Add project root to Python path
+def setup_path():
+    if getattr(sys, 'frozen', False):
+        # If running in PyInstaller bundle
+        base_path = sys._MEIPASS
+    else:
+        # If running in development
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Add base path to system path if not already there
+    if base_path not in sys.path:
+        sys.path.insert(0, base_path)
+
+# Setup path before imports
+setup_path()
+
+from lib.DiamondManager import DiamondManager
 app = Flask(__name__)
 diamond_manager = DiamondManager(Config.get_fullnode_url())
 
